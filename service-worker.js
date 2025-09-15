@@ -1,14 +1,20 @@
 const CACHE_NAME = 'genba-photo-print-v1.36'; // キャッシュ名。バージョンアップ時に変更してください
 const urlsToCache = [
-    './genba_photo_1.36.html',
+    './genba.html',
     './manifest.json',
     './service-worker.js',
     './files/app-preview.css',
     './files/print-layout.css',
-    './files/app-script.js',
+    './files/app-script-modular.js',  // ← 修正
     './files/print-script.js',
-    './icon-192x192.png', // 使用するアイコンのパスを追加
-    './icon-512x512.png'  // 使用するアイコンのパスを追加
+    './files/modules/config.js',       // ← 追加
+    './files/modules/state-manager.js', // ← 追加
+    './files/modules/file-validator.js', // ← 追加
+    './files/modules/error-handler.js',  // ← 追加
+    './files/modules/memory-manager.js', // ← 追加
+    './files/modules/accessibility.js',  // ← 追加
+    './files/icon-192x192.png', // 使用するアイコンのパスを追加
+    './files/icon-512x512.png'  // 使用するアイコンのパスを追加
     // 必要に応じて、追加の画像やスクリプト、スタイルシートなどがあればここに追加
 ];
 
@@ -25,6 +31,11 @@ self.addEventListener('install', (event) => {
 
 // フェッチイベント: リクエストに対し、キャッシュがあればキャッシュから、なければネットワークから取得
 self.addEventListener('fetch', (event) => {
+    // favicon.icoなどの不要なリクエストは無視
+    if (event.request.url.includes('favicon.ico')) {
+        return;
+    }
+    
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
@@ -34,11 +45,13 @@ self.addEventListener('fetch', (event) => {
                 }
                 // キャッシュになければネットワークから取得
                 return fetch(event.request).catch(() => {
-                    // ネットワークが利用できない場合のフォールバック（オフラインページなど）
-                    // このアプリの場合は、メインHTMLがキャッシュされていれば十分
-                    // または、特定のパス（例: index.html）に対してオフラインページを返すことも可能
-                    // 現状はオフラインでもHTMLが表示されることを目的とする
-                    console.log('Fetch failed for:', event.request.url);
+                    // ネットワークが利用できない場合のフォールバック
+                    // HTMLファイルの場合はキャッシュされたものを返す
+                    if (event.request.destination === 'document') {
+                        return caches.match('./genba.html');
+                    }
+                    // その他の場合は空のレスポンスを返す
+                    return new Response('', { status: 404, statusText: 'Not Found' });
                 });
             })
     );

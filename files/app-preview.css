@@ -369,3 +369,223 @@ input[type="date"]::-webkit-datetime-edit {
     margin: 0 !important;
 }
 /* --- ここまで修正・追加 --- */
+
+/* アクセシビリティ向上のためのスタイル */
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: #000;
+    color: #fff;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 4px;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 6px;
+}
+
+/* 高コントラストモード対応 */
+.high-contrast {
+    filter: contrast(150%);
+}
+
+.high-contrast button,
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+    border: 2px solid #000;
+}
+
+.high-contrast .notification-error {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 3px solid #fff !important;
+}
+
+.high-contrast .notification-success {
+    background-color: #000 !important;
+    color: #0f0 !important;
+    border: 3px solid #0f0 !important;
+}
+
+/* アニメーション減らしモード対応 */
+.reduced-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+.reduced-motion .notification {
+    transition: none !important;
+}
+
+/* ダークモード対応 */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-theme .bg-white {
+    background-color: #2d2d2d !important;
+}
+
+.dark-theme .bg-gray-100 {
+    background-color: #3d3d3d !important;
+}
+
+.dark-theme .bg-gray-200 {
+    background-color: #4d4d4d !important;
+}
+
+.dark-theme .text-gray-500 {
+    color: #a0a0a0 !important;
+}
+
+.dark-theme .text-gray-600 {
+    color: #b0b0b0 !important;
+}
+
+.dark-theme .text-gray-700 {
+    color: #c0c0c0 !important;
+}
+
+.dark-theme .text-gray-800 {
+    color: #d0d0d0 !important;
+}
+
+.dark-theme .border-gray-300 {
+    border-color: #666666 !important;
+}
+
+/* フォントサイズ調整 */
+.font-size-small {
+    font-size: 0.875rem;
+}
+
+.font-size-medium {
+    font-size: 1rem;
+}
+
+.font-size-large {
+    font-size: 1.125rem;
+}
+
+.font-size-large .text-sm {
+    font-size: 1rem;
+}
+
+.font-size-large .text-lg {
+    font-size: 1.25rem;
+}
+
+.font-size-large .text-xl {
+    font-size: 1.5rem;
+}
+
+.font-size-large .text-2xl {
+    font-size: 1.75rem;
+}
+
+/* フォーカス表示の強化 */
+.focus-visible {
+    outline: 3px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+}
+
+/* キーボードナビゲーション用のスタイル */
+.keyboard-navigation button:focus,
+.keyboard-navigation input:focus,
+.keyboard-navigation select:focus,
+.keyboard-navigation textarea:focus,
+.keyboard-navigation [tabindex]:focus {
+    outline: 3px solid #3b82f6 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ドラッグ&ドロップのアクセシビリティ向上 */
+.draggable[aria-grabbed="true"] {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.drag-over-top {
+    box-shadow: 0 -3px 0 0 #3b82f6 !important;
+}
+
+.drag-over-bottom {
+    box-shadow: 0 3px 0 0 #3b82f6 !important;
+}
+
+.preview-drag-over {
+    outline: 4px solid #3b82f6 !important;
+    outline-offset: -4px !important;
+    border-radius: 0.25rem !important;
+}
+
+/* エラー状態の表示 */
+[aria-invalid="true"] {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+}
+
+[aria-invalid="false"] {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* ローディング状態の表示 */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 印刷時のアクセシビリティ */
+@media print {
+    .sr-only {
+        display: none !important;
+    }
+    
+    .skip-link {
+        display: none !important;
+    }
+    
+    [aria-hidden="true"] {
+        display: none !important;
+    }
+}
