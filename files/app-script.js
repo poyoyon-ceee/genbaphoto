@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = state.siteName ? `${state.siteName}.json` : '現場データ.json';
+            a.download = state.siteName ? `genba_${state.siteName}.json` : 'genba_現場データ.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
