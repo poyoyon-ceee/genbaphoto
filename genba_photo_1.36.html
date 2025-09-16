@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現場写真一括印刷アプリ TAISEI v1.36</title>
+    
+    <!-- アプリプレビュー用CSS -->
+    <link rel="stylesheet" href="files/app-preview.css">
+    
+    <!-- 印刷用CSS -->
+    <link rel="stylesheet" href="files/print-layout.css" media="print">
+    
+    <!-- PWAマニフェストの追加 -->
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="bg-gray-100 font-sans">
+    <main class="flex flex-col lg:flex-row h-screen p-4 gap-4">
+        <!-- 操作パネル -->
+        <div id="controls-panel" class="w-full lg:w-1/3 xl:w-1/4 bg-white p-6 rounded-2xl shadow-lg overflow-y-auto">
+            <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">現場写真印刷</h1>
+
+            <!-- 写真リスト -->
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-2">写真リスト</h2>
+                <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500 cursor-pointer hover:bg-gray-50 mb-4">
+                    <p>ここに写真をドラッグ＆ドロップ</p>
+                    <p class="text-xs mt-1">またはクリックしてファイルを選択</p>
+                    <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+                </div>
+                <div id="photo-list" class="space-y-4"></div>
+            </div>
+
+            <!-- 共通情報と設定 -->
+            <div class="space-y-4 mb-6">
+                <h2 class="text-lg font-semibold text-gray-700">共通情報</h2>
+                <div>
+                    <label for="siteName" class="block text-sm font-medium text-gray-600">現場名</label>
+                    <input type="text" id="siteName" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight" placeholder="〇〇建設工事">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="personName" class="block text-sm font-medium text-gray-600">担当者</label>
+                        <input type="text" id="personName" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight" placeholder="山田 太郎">
+                    </div>
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-600">日時（カレンダー）</label>
+                        <input type="date" id="date" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-1 input-highlight">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <h2 class="text-lg font-semibold text-gray-700">レイアウト設定</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="photosPerPage" class="block text-sm font-medium text-gray-600">写真枚数/ 1ページ</label>
+                        <select id="photosPerPage" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight">
+                            <option value="1">1枚</option> <option value="2">2枚</option> <option value="3">3枚</option>
+                            <option value="4" selected>4枚</option> <option value="6">6枚</option> <option value="8">8枚</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="orientation" class="block text-sm font-medium text-gray-600">用紙の向き</label>
+                        <select id="orientation" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight">
+                            <option value="portrait" selected>縦</option> <option value="landscape">横</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-600">写真の画質（保存サイズ）</label>
+                    <div class="mt-2 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <input id="quality-high" name="imageQuality" type="radio" value="high" checked class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="quality-high" class="block text-sm text-gray-700">高画質 (1920px, 推奨)</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="quality-highest" name="imageQuality" type="radio" value="highest" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="quality-highest" class="block text-sm text-gray-700">最高画質 (2560px)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-600">写真の表示方法</label>
+                    <div class="mt-2 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <input id="display-trim" name="imageDisplayMode" type="radio" value="trim" checked class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="display-trim" class="block text-sm text-gray-700">トリミング (画像の上下をを多少削除)</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="display-fit" name="imageDisplayMode" type="radio" value="fit" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label for="display-fit" class="block text-sm text-gray-700">全体表示 (画像全体を縮小表示)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <h2 class="text-lg font-semibold text-gray-700">フォント設定</h2>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                         <label for="fontFamily" class="block text-sm font-medium text-gray-600">フォント</label>
+                        <select id="fontFamily" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight">
+                            <option value="sans-serif">ゴシック体</option> <option value="serif">明朝体</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="fontSize" class="block text-sm font-medium text-gray-600">サイズ</label>
+                        <div class="flex items-center mt-1">
+                            <input type="number" id="fontSize" value="10" min="1" class="block w-full rounded-md shadow-sm sm:text-sm input-highlight">
+                            <span class="ml-2 text-gray-600">pt</span>
+                        </div>
+                    </div>
+                     <div>
+                         <label for="fontWeight" class="block text-sm font-medium text-gray-600">太さ</label>
+                        <select id="fontWeight" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight">
+                            <option value="normal" selected>標準</option> <option value="bold">太字</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 保存・読込ボタン -->
+            <div class="grid grid-cols-2 gap-4 border-t pt-4 mt-auto">
+                <button id="save-button" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                    <svg class="inline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l-80-80c-3-3-7.1-4.7-11.3-4.7H64c-8.8 0-16 7.2-16 16zm128-8a.5.5 0 0 0 0 1h128a.5.5 0 0 0 0-1H176zM64 224c0-8.8 7.2-16 16-16h160c8.8 0 16 7.2 16 16v160c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V224z"/></svg>
+                    現場名で<br>ダウンロード
+                </button>
+                <button id="load-button" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <svg class="inline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H120c-22.1 0-40-17.9-40-40V448 287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+                    現場名で<br>読み込む
+                </button>
+                <input type="file" id="load-input" class="hidden" accept=".json">
+            </div>
+        </div>
+        <!-- /操作パネル -->
+
+        <!-- プレビューパネル -->
+        <div id="preview-panel" class="flex-1 overflow-auto bg-gray-200 p-6 rounded-2xl flex flex-col">
+             <div id="preview-controls" class="mb-4 flex justify-between items-center gap-4 sticky top-0 bg-gray-200 py-2 z-10">
+                 <div class="text-sm font-bold text-gray-700 bg-yellow-100 border border-yellow-300 p-2 rounded-lg">
+                     <svg class="inline-svg mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                     印刷のヒント: 印刷ダイアログで「倍率: 100%」「余白: なし」に設定すると綺麗に印刷できます。
+                 </div>
+                 <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1 bg-white rounded-lg shadow-md p-1">
+                        <button id="zoom-out-button" title="縮小" class="w-10 h-8 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center text-lg font-bold">-</button>
+                        <span id="zoom-display" class="w-20 text-center font-semibold text-gray-700 text-sm">100%</span>
+                        <button id="zoom-in-button" title="拡大" class="w-10 h-8 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center text-lg font-bold">+</button>
+                        <button id="zoom-reset-button" title="リセット" class="w-10 h-8 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center">
+                            <svg class="inline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM416 320c-17.7 0-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352c0-17.7-14.3-32-32-32z"/></svg>
+                        </button>
+                    </div>
+                    <button id="print-button" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        <svg class="inline-svg mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H352v96h64V64c0-35.3-28.7-64-64-64H128zM64 352h384c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 35.3 28.7 64 64 64zM0 192c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zm64 256h384c17.7 0 32-14.3 32-32s-14.3-32-32-32H64c-17.7 0-32 14.3-32 32s14.3 32 32 32z"/></svg>印刷
+                    </button>
+                </div>
+            </div>
+            <div id="preview-container" class="space-y-8 flex flex-col items-center pt-4 flex-grow"></div>
+        </div>
+        <!-- /プレビューパネル -->
+    </main>
+
+    <!-- アプリ機能用JavaScript -->
+    <script src="files/app-script.js"></script>
+    
+    <!-- 印刷用JavaScript -->
+    <script src="files/print-script.js"></script>
+</body>
+</html>
