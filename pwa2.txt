@@ -1,0 +1,90 @@
+
+
+
+
+あなたの発言
+難しいことはわからないけど、写真選択ダイアログでカメラを選択してその中のDCIMフォルダを選んで写真を選択出来るようにしたい。可能なのかな？
+Copilot の発言
+ファイル選択ダイアログでカメラ → DCIM → 写真を選ぶ方法
+結論から言うと、PWA上の写真選択ダイアログ（ファイルピッカー）を使えば、ユーザーが
+「接続中のカメラ（MTPデバイス）を選択 → DCIMフォルダを開く → 複数枚選択」
+という操作で写真を取り込むことは可能です。
+
+1. シンプルなファイル入力（最も手軽）
+html
+
+
+コピー
+<input
+  type="file"
+  id="fileInput"
+  accept="image/*"
+  multiple
+/>
+js
+
+
+コピー
+const input = document.getElementById('fileInput');
+input.addEventListener('change', () => {
+  const files = Array.from(input.files);
+  // files にユーザーが選んだ写真が入る
+  console.log(files);
+});
+ユーザーはダイアログ内で「カメラ」を選び、DCIM→Cameraフォルダへ移動して複数枚をタップ
+
+実装は1行のHTML＋イベントリスナーのみで完了
+
+ほぼすべてのブラウザで動作
+
+2. フォルダ選択＋再帰読み込み（Chrome/Edge限定）
+カメラ丸ごとフォルダを指定して「DCIM」配下すべてから写真を自動的に取得したい場合。
+Chrome系なら showDirectoryPicker を使えます。
+
+js
+
+
+コピー
+// カメラのルートディレクトリ（例：DCIM）が選べるように促す
+async function pickDCIMFolder() {
+  const dirHandle = await window.showDirectoryPicker({ startIn: 'pictures' });
+  // 選ばれたディレクトリを再帰走査
+  const files = [];
+  await traverse(dirHandle, files);
+  // 上位5枚だけ取り出す
+  const selected = files.filter(f => f.type.startsWith('image/')).slice(0, 5);
+  console.log(selected);
+}
+
+async function traverse(dirHandle, files) {
+  for await (const entry of dirHandle.values()) {
+    if (entry.kind === 'file') {
+      const file = await entry.getFile();
+      files.push(file);
+    } else if (entry.kind === 'directory') {
+      await traverse(entry, files);
+    }
+  }
+}
+ユーザーはダイアログで「カメラ（MTP）→DCIM」を選択
+
+サブフォルダも含め再帰的に画像を収集
+
+PWAインストール済みまたはHTTPS上のChrome/Edgeで動作
+
+3. 操作感の選択ポイント
+手軽さ重視 → <input type="file" accept="image/*" multiple>
+
+フォルダ単位で自動取得 → File System Access API の showDirectoryPicker
+
+対応ブラウザやUX要件に合わせて使い分けてください
+
+次は「どちらの方法を試してみたいか」か、あるいは「選択後のサムネイル表示や印刷フロー」の実装に進んでいきましょう。
+
+会話を続ける
+
+
+クイック応答
+
+
+
