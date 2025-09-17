@@ -18,7 +18,10 @@
     <main class="flex flex-col lg:flex-row h-screen p-4 gap-4">
         <!-- 操作パネル -->
         <div id="controls-panel" class="w-full lg:w-1/3 xl:w-1/4 bg-white p-6 rounded-2xl shadow-lg overflow-y-auto">
-            <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">現場写真印刷</h1>
+            <h1 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2 flex items-end">
+                現場写真印刷
+                <span class="text-sm text-gray-500 ml-2 mb-0.5 font-semibold">MMS　v1.0</span>
+            </h1>
 
             <!-- 写真リスト -->
             <div class="mb-6">
@@ -36,7 +39,7 @@
                 <h2 class="text-lg font-semibold text-gray-700">共通情報</h2>
                 <div>
                     <label for="siteName" class="block text-sm font-medium text-gray-600">現場名</label>
-                    <input type="text" id="siteName" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight" placeholder="〇〇建設工事">
+                    <input type="text" id="siteName" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm input-highlight" placeholder="〇〇町〇-〇-〇">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
