@@ -264,3 +264,50 @@ input[type="date"]::-webkit-datetime-edit {
     margin: 0 !important;
 }
 /* --- ここまで修正・追加 --- */
+
+/* プレビュー画面でも印刷レイアウトと同じスタイルを適用 */
+.a4-page-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 写真セルのレイアウトを印刷画面と同じに */
+.preview-photo-cell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.preview-photo-cell .mb-1 {
+    flex-shrink: 0;
+}
+
+.preview-photo-cell .flex-grow {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* 写真エリアの設定 */
+.preview-photo-cell .photo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* トリミングモードの画像 */
+.preview-photo-cell .photo-area.overflow-hidden img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* 全体表示モードの画像 */
+.preview-photo-cell .photo-area:not(.overflow-hidden) img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+

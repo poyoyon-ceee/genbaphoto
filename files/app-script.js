@@ -103,9 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const commentHTML = photo.comment ? `<p class="pre-wrap-break"><strong>コメント:</strong> ${photo.comment}</p>` : '';
                 const imageContainerClass = state.imageDisplayMode === 'trim' ? 'overflow-hidden' : '';
                 const imageClass = state.imageDisplayMode === 'trim' ? 'max-w-full max-h-full object-contain' : 'w-full h-full object-contain';
+                
                 return `<div class="preview-photo-cell border border-gray-300 p-2 flex flex-col h-full" draggable="true" data-photo-id="${photo.id}">
                     <div class="mb-1 flex-shrink-0">${locationHTML}${commentHTML}</div>
-                    <div class="bg-gray-100 flex items-center justify-center ${imageContainerClass} min-h-0 flex-grow">
+                    <div class="bg-gray-100 flex items-center justify-center ${imageContainerClass} min-h-0 flex-grow photo-area">
                         <img src="${photo.url}" class="${imageClass}" draggable="false">
                     </div>
                 </div>`;
