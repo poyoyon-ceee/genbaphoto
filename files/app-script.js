@@ -285,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = src;
     }
 
+
     // --- イベントリスナー ---
     function setupEventListeners() {
         siteNameInput.addEventListener('input', e => {
@@ -531,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsText(file);
             e.target.value = '';
         });
+
     }
 
     // --- 初期実行 ---
